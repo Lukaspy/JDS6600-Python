@@ -40,6 +40,6 @@ j.measure_setmode("FREQ")
 
 while True:
     measured = j.measure_getfreq_f()
-    write_freq(measured)
+    write_freq_temp(measured)
     sleep(1)
 
