@@ -2,7 +2,7 @@
 from jds6600 import jds6600
 from time import time, strftime, sleep
 import glob
-
+import RPi.GPIO as GPIO
 
 def write_freq_temp(freq):
     with open(output, "a") as log:
@@ -27,11 +27,13 @@ def read_temp():
         return temp_f
     
 def regulate_temperature():
-    if desired_temp < read_temp():
+    if int(desired_temp) < read_temp():
         GPIO.output(13, True)
     else:
         GPIO.output(13, False)
 
+GPIO.setmode(GPIO.BOARD)
+GPIO.setup(13, GPIO.OUT)
 port = input("What is the tty number?: ")
 output = input("type path and filename: ")
 j = jds6600("/dev/tty"+port)
@@ -41,12 +43,12 @@ device_file = device_folder + '/w1_slave'
 desired_temp = input("What is the desired temperature?: ")
 
 j.measure_setcoupling("DC")
-j.measure_setgate(10)
+j.measure_setgate(5)
 j.measure_setmode("FREQ")
 
 while True:
     measured = j.measure_getfreq_f()
     write_freq_temp(measured)
     regulate_temperature()
-    sleep(1)
+    sleep(5)
 
