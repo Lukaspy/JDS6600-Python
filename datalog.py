@@ -6,7 +6,7 @@ import glob
 
 def write_freq_temp(freq):
     with open(output, "a") as log:
-        log.write("{0},{1},{2}\n".format(strftime("%Y-%m-%d %H:%M:%S"),str(freq)),read_temp())        
+        log.write("{0},{1},{2}\n".format(strftime("%Y-%m-%d %H:%M:%S"),str(freq),read_temp()))
 
 def read_temp_raw():
     f = open(device_file, 'r')
@@ -25,7 +25,12 @@ def read_temp():
         temp_c = float(temp_string) / 1000.0
         temp_f = temp_c * 9.0 / 5.0 + 32.0
         return temp_f
-
+    
+def regulate_temperature():
+    if desired_temp < read_temp():
+        GPIO.output(13, True)
+    else:
+        GPIO.output(13, False)
 
 port = input("What is the tty number?: ")
 output = input("type path and filename: ")
@@ -33,6 +38,7 @@ j = jds6600("/dev/tty"+port)
 base_dir = '/sys/bus/w1/devices/'
 device_folder = glob.glob(base_dir + '28*')[0]
 device_file = device_folder + '/w1_slave'
+desired_temp = input("What is the desired temperature?: ")
 
 j.measure_setcoupling("DC")
 j.measure_setgate(10)
@@ -41,5 +47,6 @@ j.measure_setmode("FREQ")
 while True:
     measured = j.measure_getfreq_f()
     write_freq_temp(measured)
+    regulate_temperature()
     sleep(1)
 
