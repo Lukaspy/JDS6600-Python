@@ -48,7 +48,10 @@ j.measure_setmode("FREQ")
 
 while True:
     measured = j.measure_getfreq_f()
-    write_freq_temp(measured)
-    regulate_temperature()
+    try:
+        write_freq_temp(measured)
+        regulate_temperature()
+    except:
+        print("temp probe disconnected")
     sleep(5)
 
