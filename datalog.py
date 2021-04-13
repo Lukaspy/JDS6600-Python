@@ -28,9 +28,9 @@ def read_temp():
     
 def regulate_temperature():
     if int(desired_temp) < read_temp():
-        GPIO.output(13, True)
-    else:
         GPIO.output(13, False)
+    else:
+        GPIO.output(13, True)
 
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(13, GPIO.OUT)
